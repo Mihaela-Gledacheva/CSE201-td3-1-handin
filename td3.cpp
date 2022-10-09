@@ -103,15 +103,50 @@ int find_min_first_element(double **telemetries, int tot_telemetries) {
     return k;
 }
 
+void remove_telemetry(double** array, double** telemetry, int &current_size) {
+    current_size --;
+    for (double** p = telemetry; p < array + current_size; p++) {
+        *p = *(p + 1);
+    }
+}
+
+void remove_telemetry_size(int* array, int* telemetry, int &current_size) {
+    for (int* p = telemetry; p < array + current_size; p++) {
+        *p = *(p + 1);
+    }
+}
+
+void remove_first_element(double* array, int &current_size) {
+    current_size --;
+    for (double* p = array; p < array + current_size; p++) {
+        *p = *(p + 1);
+    }
+}
+
 void merge_telemetry(double **telemetries,
                      int tot_telemetries,
                      int *telemetries_sizes,
                      double* &global_telemetry,
                      int &global_telemetry_current_size,
                      int &global_telemetry_max_size) {
-    //int i = find_min_first_element(telemetries, tot_telemetries);
-    //global_telemetry = append_to_array(telemetries[i][0], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
-    //global_telemetry = append_to_array(telemetries[i][1], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
-    //global_telemetry = append_to_array(telemetries[i][2], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
-    //telemetries[i] = telemetries[i] + 3;
+    while (tot_telemetries > 1) {
+        for (int i = 0; i < tot_telemetries; i++) {
+            if (telemetries_sizes[i] == 0) {
+                remove_telemetry(telemetries, telemetries+i, tot_telemetries);
+                remove_telemetry_size(telemetries_sizes, telemetries_sizes+i, tot_telemetries);
+            }
+        }
+        int i = find_min_first_element(telemetries, tot_telemetries);
+        for (int _ = 0; _ < 3; _++) {
+            global_telemetry = append_to_array(telemetries[i][0], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
+            remove_first_element(telemetries[i], telemetries_sizes[i]);
+        }
+    }
+    for (int i = 0; i < telemetries_sizes[0]; i++) {
+        global_telemetry = append_to_array(telemetries[0][i], global_telemetry, global_telemetry_current_size, global_telemetry_max_size);
+    }
+    for (int i = 0; i < global_telemetry_current_size; i++) {
+        std::cout<<*(global_telemetry+i)<<", ";
+    }
+    std::cout<<global_telemetry_current_size<<". ";
 }
